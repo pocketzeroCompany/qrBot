@@ -8,7 +8,10 @@ from aiogram.types import BufferedInputFile, Message
 import qrcode
 
 # Встав свій токен від @BotFather
-TOKEN = "8809308425:AAHUO860MC0eTZep-wjcfKYmhJn_ZB0ZOm4"
+import os
+
+TOKEN = os.getenv("BOT_TOKEN")
+
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
