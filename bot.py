@@ -51,8 +51,8 @@ def generate_qr_bytes(text: str, fill_color: str, back_color: str) -> bytes:
 async def cmd_start(message: Message, state: FSMContext):
     await state.clear()
     await message.answer(
-        "Hello! I am qr_huntbot.\n\n"
-        "Send me any text or link that you want to turn into a QR code."
+        "🜲Hi! I'm @qrhunt_bot.
+Ready to track down any text or link into a clean QR code. Just send it over!"
     )
     await state.set_state(QRStates.waiting_for_text)
 
