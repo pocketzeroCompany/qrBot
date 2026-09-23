@@ -15,19 +15,17 @@ TOKEN = os.getenv("BOT_TOKEN")
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-# Стани для FSM (покроковий діалог)
 class QRStates(StatesGroup):
     waiting_for_text = State()
     choosing_style = State()
     choosing_color = State()
 
-# Словник кольорів (назва: (колір QR, колір фону))
 COLORS = {
     "black": ("black", "white"),
     "blue": ("#1E3A8A", "white"),
     "green": ("#065F46", "white"),
     "purple": ("#581C87", "white"),
-    "matrix": ("#00FF00", "black") # Стиль хакера: зелений на чорному
+    "matrix": ("#00FF00", "black")
 }
 
 def generate_qr_bytes(text: str, fill_color: str, back_color: str) -> bytes:
@@ -51,8 +49,8 @@ def generate_qr_bytes(text: str, fill_color: str, back_color: str) -> bytes:
 async def cmd_start(message: Message, state: FSMContext):
     await state.clear()
     await message.answer(
-        "🜲Hi! I'm @qrhunt_bot.
-Ready to track down any text or link into a clean QR code. Just send it over!"
+        "Welcome to qrhunt_bot.\n\n"
+        "Send any text, link, or data, and I will instantly turn it into a sharp QR code. Let's start!"
     )
     await state.set_state(QRStates.waiting_for_text)
 
@@ -60,7 +58,6 @@ Ready to track down any text or link into a clean QR code. Just send it over!"
 async def process_text(message: Message, state: FSMContext):
     await state.update_data(qr_text=message.text)
     
-    # Кнопки вибору стилю
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="Classic (Black & White)", callback_data="style:classic")],
         [InlineKeyboardButton(text="Colored Design", callback_data="style:colored")]
@@ -84,7 +81,6 @@ async def process_style(callback: CallbackQuery, state: FSMContext):
         await callback.message.delete()
         await state.clear()
     else:
-        # Якщо обрано кольоровий, показуємо вибір кольорів
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="Blue", callback_data="color:blue"), InlineKeyboardButton(text="Green", callback_data="color:green")],
             [InlineKeyboardButton(text="Purple", callback_data="color:purple"), InlineKeyboardButton(text="Matrix (Green on Black)", callback_data="color:matrix")]
@@ -119,4 +115,4 @@ if __name__ == "__main__":
     if sys.platform == "win32":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     asyncio.run(main())
-                                                                                                     
+    
