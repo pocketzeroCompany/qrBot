@@ -97,8 +97,15 @@ async def cb_back_main(callback: CallbackQuery, state: FSMContext):
         "━━━━━━━━━━━━━━━━━━━━\n\n"
         "Select data type or pick a color scheme below:"
     )
-    await callback.message.edit_text(text, reply_markup=get_start_keyboard(), parse_mode="Markdown")
+    # Якщо це прийшло з фото (після генерації QR), краще видалити фото і надіслати нове меню, або використати answer
+    try:
+        await callback.message.answer(text, reply_markup=get_start_keyboard(), parse_mode="Markdown")
+        await callback.message.delete()
+    except Exception:
+        await callback.message.edit_text(text, reply_markup=get_start_keyboard(), parse_mode="Markdown")
+    
     await callback.answer()
+    
 
 @dp.callback_query(F.data == "menu_colors")
 async def cb_menu_colors(callback: CallbackQuery, state: FSMContext):
@@ -176,15 +183,14 @@ async def process_qr_input(message: Message, state: FSMContext):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="🔄 Generate Another", callback_data="back_main")]
     ])
-  
-    await message.answer_photo(
+    
+        await message.answer_photo(
         photo=photo,
         caption=f"✨ **QR Generated Successfully**\n▪ Type: `{qr_type.upper()}`\n▪ Theme: `{COLOR_PALETTES[color_key]['name']}`",
         reply_markup=keyboard,
         parse_mode="Markdown"
-    )
-    
-    
+        )
+
     await state.clear()
 
 async def main():
