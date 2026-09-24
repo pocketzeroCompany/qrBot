@@ -17,11 +17,9 @@ TOKEN = os.getenv("BOT_TOKEN")
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-# Стан для покрокового створення різних типів QR
 class QRStates(StatesGroup):
     waiting_for_input = State()
 
-# Кольорові палітри для кастомізації
 COLOR_PALETTES = {
     "classic": {"fill": "black", "back": "white", "name": "Classic Black"},
     "matrix": {"fill": "#00FF66", "back": "#0A0A0A", "name": "Matrix Green"},
@@ -41,7 +39,6 @@ def generate_qr_bytes(data: str, color_key: str = "classic") -> bytes:
     qr.add_data(data)
     qr.make(fit=True)
 
-    # Конвертація кольорів з hex у RGB або назви
     fill_c = palette["fill"]
     back_c = palette["back"]
 
@@ -97,7 +94,6 @@ async def cb_back_main(callback: CallbackQuery, state: FSMContext):
         "━━━━━━━━━━━━━━━━━━━━\n\n"
         "Select data type or pick a color scheme below:"
     )
-    # Якщо це прийшло з фото (після генерації QR), краще видалити фото і надіслати нове меню, або використати answer
     try:
         await callback.message.answer(text, reply_markup=get_start_keyboard(), parse_mode="Markdown")
         await callback.message.delete()
@@ -105,11 +101,9 @@ async def cb_back_main(callback: CallbackQuery, state: FSMContext):
         await callback.message.edit_text(text, reply_markup=get_start_keyboard(), parse_mode="Markdown")
     
     await callback.answer()
-    
 
 @dp.callback_query(F.data == "menu_colors")
 async def cb_menu_colors(callback: CallbackQuery, state: FSMContext):
-    # Зберігаємо вибраний стиль за замовчуванням у стейт (або беремо дефолт)
     data = await state.get_data()
     current_color = data.get("color", "classic")
     
@@ -159,9 +153,7 @@ async def process_qr_input(message: Message, state: FSMContext):
     
     raw_text = message.text.strip()
     
-    # Форматування даних залежно від типу
     if qr_type == "wifi":
-        # Формат WiFi для QR: WIFI:S:<SSID>;T:<WPA|WEP|nopass>;P:<password>;;
         parts = raw_text.split(";")
         ssid = parts[0] if len(parts) > 0 else "Network"
         password = parts[1] if len(parts) > 1 else ""
@@ -176,7 +168,6 @@ async def process_qr_input(message: Message, state: FSMContext):
     else:
         content = raw_text
 
-    # Генерація картинки
     qr_bytes = generate_qr_bytes(content, color_key)
     photo = BufferedInputFile(qr_bytes, filename="qrcode.png")
     
@@ -184,13 +175,12 @@ async def process_qr_input(message: Message, state: FSMContext):
         [InlineKeyboardButton(text="🔄 Generate Another", callback_data="back_main")]
     ])
     
-        await message.answer_photo(
+    await message.answer_photo(
         photo=photo,
         caption=f"✨ **QR Generated Successfully**\n▪ Type: `{qr_type.upper()}`\n▪ Theme: `{COLOR_PALETTES[color_key]['name']}`",
         reply_markup=keyboard,
         parse_mode="Markdown"
-        )
-
+    )
     await state.clear()
 
 async def main():
