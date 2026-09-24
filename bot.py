@@ -176,12 +176,14 @@ async def process_qr_input(message: Message, state: FSMContext):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="🔄 Generate Another", callback_data="back_main")]
     ])
-    
+  
     await message.answer_photo(
         photo=photo,
-        caption=f"✨ **QR Generated Successfully**\n▪ Type: `{qr_type.upper()`}\n▪ Theme: `{COLOR_PALETTES[color_key]['name']}`",
+        caption=f"✨ **QR Generated Successfully**\n▪ Type: `{qr_type.upper()}`\n▪ Theme: `{COLOR_PALETTES[color_key]['name']}`",
         reply_markup=keyboard,
         parse_mode="Markdown"
+    )
+    
     )
     await state.clear()
 
