@@ -184,7 +184,7 @@ async def process_qr_input(message: Message, state: FSMContext):
         parse_mode="Markdown"
     )
     
-    )
+    
     await state.clear()
 
 async def main():
