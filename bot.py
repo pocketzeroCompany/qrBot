@@ -104,15 +104,14 @@ async def get_ai_response(prompt: str, user_id: int) -> str:
     if not g4f_available:
         return f"[Demo AI Mode]: {prompt}"
     
-    try:
+        try:
         response = await asyncio.to_thread(
             g4f.ChatCompletion.create,
             model=g4f.models.gpt_4o,
+            provider=g4f.Provider.PollinationsAI, # Використовуємо стабільний безкоштовний API-провайдер
             messages=[{"role": "user", "content": full_prompt}]
         )
         return str(response)
-    except Exception as e:
-        return f"AI Service error: {e}"
 
 # --- KEYBOARDS ---
 def main_menu_kb():
