@@ -1,5 +1,2 @@
-aiogram
-aiosqlite
-aiohttp
-g4f
-duckduckgo_search
+aiogram>=3.13,<4
+Pillow>=10.0
